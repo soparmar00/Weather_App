@@ -1,14 +1,12 @@
 import axios from 'axios'
-import { login, signUp } from '../Redux/Action/actions';
+import { login, signUp, weather } from '../Redux/Action/actions';
 
 const request = axios.create({
     baseURL: 'http://localhost:7000',
 });
 
 export const signUpUser = (state) => async (dispatch) => {
-    //console.log(state)
     try{
-        // console.log(state)
         const response = await request.post('/signup', state);
         dispatch(signUp({users: response.data}))
     }
@@ -18,7 +16,7 @@ export const signUpUser = (state) => async (dispatch) => {
 }
 
 export const loginUser = (state) => async (dispatch) => {
-    console.log(state)
+   
     try{
         const response = await request.post('/login', state);
         console.log(response.data)
@@ -31,4 +29,23 @@ export const loginUser = (state) => async (dispatch) => {
     }
  }
 
- 
+export const location = (state) => async (dispatch) => {
+    
+    try{
+        const response = await request.get('/dashboard/weather', {
+            params: {
+                lat: state,
+                lon: state
+            }
+
+        });
+        dispatch(weather(response.data))
+    }
+    catch (err) {
+        console.log(err)
+    }
+
+}
+
+
+

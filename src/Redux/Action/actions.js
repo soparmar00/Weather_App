@@ -1,7 +1,7 @@
 export const SIGN_UP = "SIGN_UP";
 export const LOGIN = "LOGIN";
 export const LOGOUT = "LOGOUT";
-export const LOCATION = "LOCATION"
+export const WEATHER = "WEATHER"
 
 export const signUp = (payload) => ({
     type: SIGN_UP,
@@ -18,8 +18,8 @@ export const logout = (payload) => ({
     payload,
 })
 
-export const location = (payload) => ({
-    type: LOCATION,
+export const weather = (payload) => ({
+    type: WEATHER,
     payload,
 })
 

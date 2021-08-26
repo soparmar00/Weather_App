@@ -3,6 +3,7 @@ import { Button } from 'react-bootstrap';
 import { useDispatch } from "react-redux";
 import { logout } from '../Redux/Action/actions';
 import { useState } from 'react';
+import { location } from '../Thunk/thunk';
 
 
 const Dashboard = () => {
@@ -29,7 +30,14 @@ const Dashboard = () => {
                 setLat(location.coords.latitude);
                 setLon(location.coords.longitude);
             })
+            
         }
+    }
+
+    const handleWeather = () => {
+        console.log(lat, lon)
+        dispatch(location({lat, lon}))
+        
     }
 
     return (
@@ -43,11 +51,9 @@ const Dashboard = () => {
         <br />
         <h3>Cordinates</h3>
         <p>{state}</p>
-        {lat && <p>Latitude: {lat}</p>}
-        {lon && <p>Longitude: {lon}</p>}
+        {lat && <p>Latitude: {lat}</p>}{lon && <p>Longitude: {lon}</p>}
         <br />
-        <br />
-    
+        <Button variant="info" onClick={() => handleWeather()} >Todays Weather</Button>
         </div>
     )
 }
