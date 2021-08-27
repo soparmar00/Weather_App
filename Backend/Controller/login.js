@@ -6,7 +6,7 @@ const LogModel = require("../Model/Log")
 const register = async (req, res) => {
 const {name, email, password } = req.body;
 try {
-    const encryptPass = await bcrypt.hash(password, 12);
+    const encryptPass = await bcrypt.hash(password, 10);
     const user = await LoginModel.findOne({ email });
      if (user) {
           return res.status(400).json({ 
@@ -29,7 +29,7 @@ const login = async (req, res) => {
     
     const { email, password } = req.body;
     const date=new Date()
-    const time=new Date().toTimeString()
+    const time=new Date()
     try {
         const user = await LoginModel.findOne({ email });
   

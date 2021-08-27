@@ -5,15 +5,28 @@ const api_key = 'c7fff0558f88393541614e0c8ecdbb33';
 
 const weather = async (req, res) => {
     try {
-        const params1  = req.query.lat
-        const params2  = req.query.lon
-        console.log(params1, params2)
+        const params1 = req.query.lat
+        const params2 = req.query.lon
+        const params3 = req.query.userCity 
+        console.log(params1, params2, params3)
 
+        if(params1 == true && params2 == true){
+            return params3 = null
+        }
+
+        if(params1 == true && params2 == true){
         const weatherUrl = url+`?lat=${params1}&lon=${params2}&appid=${api_key}`
 
         const fetchWeather = await axios.get(`${weatherUrl}`)
         const convert = JSON.stringify(fetchWeather.data)
-        res.status(200).json(convert)   
+        res.status(200).json(convert)
+        }
+        else{
+            const cityWeatherUrl = url+`?q=${params3}&appid=${api_key}`
+            const fetchCityWeather = await axios.get(`${cityWeatherUrl}`)
+            const convertCity = JSON.stringify(fetchCityWeather.data)
+            res.status(200).json(convertCity)
+        }   
     }
     catch (error) {
         res.status(404).json({ message: error.message })
