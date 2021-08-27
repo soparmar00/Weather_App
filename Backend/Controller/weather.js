@@ -1,62 +1,78 @@
-const axios=require("axios")
-const CityModel = require('../Model/citysearch')
-const url = "http://api.openweathermap.org/data/2.5/weather"
-const api_key = 'c7fff0558f88393541614e0c8ecdbb33';
+import React from 'react'
+import { Button } from 'react-bootstrap';
+import { useDispatch, useSelector } from "react-redux";
+import {  logout } from '../Redux/Action/actions';
+import { useState, useEffect} from 'react';
+import { cityWeather, location } from '../Thunk/thunk';
 
-const weather = async (req, res) => {
-    try {
-        const params1 = req.query.lat
-        const params2 = req.query.lon
-        const params3 = req.query.userCity 
-        console.log(params1, params2, params3)
 
-        if(params1 == true && params2 == true){
-            return params3 = null
-        }
+const Dashboard = () => {
 
-        if(params1 == true && params2 == true){
-        const weatherUrl = url+`?lat=${params1}&lon=${params2}&appid=${api_key}`
+    const dispatch = useDispatch()
+    const [lat, setLat] = useState(null)
+    const [lon, setLon] = useState(null)
+  
+    
 
-        const fetchWeather = await axios.get(`${weatherUrl}`)
-        const convert = JSON.stringify(fetchWeather.data)
-        res.status(200).json(convert)
-        }
-        else{
-            const cityWeatherUrl = url+`?q=${params3}&appid=${api_key}`
-            const fetchCityWeather = await axios.get(`${cityWeatherUrl}`)
-            const convertCity = JSON.stringify(fetchCityWeather.data)
-            res.status(200).json(convertCity)
-        }   
+    const weatherReport = useSelector((state) => state.Users.weatherLL)
+    const cityWeatherReport = useSelector((state) => state.Users.weatherCity)
+    const name = useSelector((state) => state.Users.name)
+    const userCity = useSelector((state) => state.Users.userCity)
+
+    const [wcity, setWcity] = useState({user: name, city:''})
+
+    const handleLogout = () => {
+        localStorage.clear()
+        dispatch(logout())
     }
-    catch (error) {
-        res.status(404).json({ message: error.message })
+
+    const getLocation = () => {
+        navigator.geolocation.getCurrentPosition((location) => {
+            setLat(location.coords.latitude);
+            setLon(location.coords.longitude);
+        })
+
     }
-}
 
-const cityWeather = async (req, res) => {
-    try{
-        const param1 = req.query.city
-        const param2 = req.query.name
-        console.log(param1, param2)
+    useEffect(() => {
+        getLocation()
+    })
 
-        const weatherUrl = url+`?q=${param1}&appid=${api_key}`
 
-        const featchWeather = await axios.get(`${weatherUrl}`)
-        const convert = JSON.stringify(featchWeather.data)
+    const handleWeather = () => {
+        dispatch(location({lat, lon, userCity}))
         
-        const user=param2
-        const date=new Date()
-        const time=new Date()
-        const cityName= param1
-        const cityReport=convert
-        const cityData = new CityModel({user, date, time, cityName, cityReport})
-        await cityData.save()
+    }
 
-        res.status(200).json(convert)
+    const handleCity = (e) => {
+        const {name, value} = e.target
+        setWcity({...wcity, [name]: value})
     }
-    catch (error) {
-        res.status(404).json({ message: error.message })
+
+    const handleCitySubmit = (e) => {
+        e.preventDefault()
+        dispatch(cityWeather(wcity))
     }
+
+    return (
+        <div>
+        <Button variant="danger" onClick={() => handleLogout()} >Logout</Button>
+        <h1>Welcome to the Dasboard</h1> 
+        <br />
+        <br />
+        <Button variant="info" onClick={() => handleWeather()} >Todays Weather</Button>
+        <h4>{weatherReport}</h4>
+        <br />
+        <br />
+        <form onSubmit={handleCitySubmit}>
+        <input type='text' name='user' defaultValue={name} onChange={handleCity} />
+        <input type='text' name='city'placeholder='Enter city' onChange={handleCity} />&nbsp;&nbsp;&nbsp;&nbsp;
+        <button type="submit">Get Weathr Report</button>
+        </form>
+        <br />
+        <h4>{cityWeatherReport}</h4>
+        </div>
+    )
 }
 
-module.exports = {weather, cityWeather}
+export default Dashboard
